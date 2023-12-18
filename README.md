@@ -1,0 +1,1 @@
+Basic Python terminal app that allows user to embed and upsert documents into Pinecone and then use RAG to answer questions.
