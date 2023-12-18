@@ -14,6 +14,7 @@ from tkinter import filedialog
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 
+# TODO: support more file types
 EXTENSIONS = [".pdf"]
 LOCAL_SOURCES_FILEPATH = "./sources.txt"
 
