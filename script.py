@@ -29,6 +29,8 @@ MAX_CHUNK_SIZE = 400
 UPSERT_BATCH_LIMIT = 100
 TEXT_FIELD = "text"
 
+previously_upserted = False
+
 
 # useful objects
 existing_sources = []
@@ -138,12 +140,17 @@ def retrieve_files_from_folderpath(folderpath: str, extensions: list[str]):
 
 
 def crawl_and_upsert():
-    global existing_sources
+    global existing_sources, previously_upserted
 
     print()
     filepaths = []
 
+    # NOTE: on older versions of tkinter, repeated calls will result in segfault.
+    # https://github.com/python/cpython/issues/92603
     while (True):
+        if previously_upserted:
+            print(
+                "Note that older versions of tkinter will error if you open up the select dialog multiple times. ", end="")
         crawling_option = input(
             "Would you like to (1) select individual files or (2) select a folder? ")
         if crawling_option == "1":
@@ -156,6 +163,8 @@ def crawl_and_upsert():
             break
         else:
             print("Please enter either 1 or 2")
+
+    previously_upserted = True
 
     if len(filepaths) > 10:
         continue_input = input(
