@@ -15,6 +15,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 
 EXTENSIONS = [".pdf"]
+LOCAL_SOURCES_FILEPATH = "./sources.txt"
 
 # langchain
 EMBEDDING_MODEL_NAME = "text-embedding-ada-002"
@@ -27,7 +28,25 @@ MAX_CHUNK_SIZE = 400
 UPSERT_BATCH_LIMIT = 100
 TEXT_FIELD = "text"
 
+
 # useful objects
+existing_sources = []
+if not os.path.exists(LOCAL_SOURCES_FILEPATH):
+    with open(LOCAL_SOURCES_FILEPATH, 'w'):
+        pass
+
+
+def update_existing_sources():
+    global existing_sources
+
+    existing_sources = []
+    with open(LOCAL_SOURCES_FILEPATH, 'r') as file:
+        for line in file:
+            existing_sources.append(line.strip())
+
+
+update_existing_sources()
+
 print("Initializing embedding model...")
 embed = OpenAIEmbeddings(
     model=EMBEDDING_MODEL_NAME,
@@ -116,8 +135,10 @@ def retrieve_files_from_folderpath(folderpath: str, extensions: list[str]):
 
     return file_list
 
-# TODO: write better crawling logic (including updating based on timestamp and ignoring duplicates)
+
 def crawl_and_upsert():
+    global existing_sources
+
     print()
     filepaths = []
 
@@ -142,9 +163,23 @@ def crawl_and_upsert():
             print("Aborting!")
             return
 
+    upserted_filepaths = []
+
     for filepath in filepaths:
-        parsed_document = parse_single_document(filepath)
-        process_documents_for_upsert(parsed_document)
+        # TODO: account for updated files
+        if filepath in existing_sources:
+            print(
+                f"Skipping {get_title_from_filepath(filepath)} because it was already parsed.")
+        else:
+            parsed_document = parse_single_document(filepath)
+            process_documents_for_upsert(parsed_document)
+            upserted_filepaths.append(filepath)
+
+    with open(LOCAL_SOURCES_FILEPATH, 'a') as file:
+        for filepath in upserted_filepaths:
+            file.write(filepath + "\n")
+
+    update_existing_sources()
 
 
 def print_output(output: Dict[str, Any]):
@@ -185,6 +220,9 @@ if __name__ == "__main__":
                 f"There are {index.describe_index_stats()['total_vector_count']} stored vectors. Are you sure you want to delete? (y/N): ")
             if confirm == "y":
                 index.delete(delete_all=True)
+                with open(LOCAL_SOURCES_FILEPATH, 'w') as file:
+                    pass
+                update_existing_sources()
                 print("Index cleared!")
             else:
                 print("Aborting!")
