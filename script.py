@@ -77,6 +77,10 @@ def upsert_documents(texts: list, metadatas: list):
     index.upsert(vectors=zip(ids, embeds, metadatas))
 
 
+def get_title_from_filepath(filepath: str):
+    return os.path.basename(filepath)
+
+
 def process_documents_for_upsert(documents: List[Document]):
     texts = []
     metadatas = []
@@ -85,7 +89,7 @@ def process_documents_for_upsert(documents: List[Document]):
         metadata = {
             'page': str(record.metadata['page']),
             'source': record.metadata['source'],
-            'title': record.metadata['source'],
+            'title': get_title_from_filepath(record.metadata['source']),
             'text': record.page_content,
         }
 
@@ -150,7 +154,7 @@ def print_output(output: Dict[str, Any]):
     for source_document in output["source_documents"]:
         source_document: Document = source_document
         print(
-            f"- {str(source_document.metadata['source'])} (page {source_document.metadata['page']})")
+            f"- {str(source_document.metadata['title'])} (page {source_document.metadata['page']})")
 
 
 # TODO: separate query answering and upserting into different files
