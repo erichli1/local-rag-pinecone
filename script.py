@@ -1,6 +1,7 @@
 import os
 import tiktoken
 import pinecone
+from tqdm.auto import tqdm
 from typing import Any, Dict, List
 from langchain_core.documents import Document
 from langchain.document_loaders import PyPDFLoader
@@ -8,6 +9,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
 from uuid import uuid4
+from tkinter import filedialog
 
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
@@ -77,7 +79,7 @@ def process_documents_for_upsert(documents: List[Document]):
     texts = []
     metadatas = []
 
-    for _, record in enumerate(documents):
+    for _, record in enumerate(tqdm(documents)):
         metadata = {
             'page': str(record.metadata['page']),
             'source': record.metadata['source'],
@@ -95,13 +97,15 @@ def process_documents_for_upsert(documents: List[Document]):
             metadatas = []
 
     if len(texts) > 0:
-        upsert_documents
+        upsert_documents(texts, metadatas)
 
 
 # TODO: write better crawling logic (including updating based on timestamp and ignoring duplicates)
 def crawl_and_upsert():
-    # folder_path = input()
-    file_path = "test-data/pdf/ebay.pdf"
+    filepaths = filedialog.askopenfilenames()
+    for filepath in filepaths:
+        parsed_document = parse_single_document(filepath)
+        process_documents_for_upsert(parsed_document)
 
 
 def print_output(output: Dict[str, Any]):
@@ -129,4 +133,5 @@ def answer_queries():
 
 
 if __name__ == "__main__":
-    answer_queries()
+    crawl_and_upsert()
+    # answer_queries()
