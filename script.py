@@ -98,6 +98,7 @@ def process_documents_for_upsert(documents: List[Document]):
         upsert_documents
 
 
+# TODO: write better crawling logic (including updating based on timestamp and ignoring duplicates)
 def crawl_and_upsert():
     # folder_path = input()
     file_path = "test-data/pdf/ebay.pdf"
@@ -113,6 +114,7 @@ def print_output(output: Dict[str, Any]):
             f"- {str(source_document.metadata['source'])} (page {source_document.metadata['page']})")
 
 
+# TODO: separate query answering and upserting into different files
 def answer_queries():
     while (True):
         print()
