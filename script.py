@@ -119,9 +119,10 @@ def crawl_and_upsert():
 
     while (True):
         crawling_option = input(
-            "Would you like to (1) select individual files or (2) select a folder?")
+            "Would you like to (1) select individual files or (2) select a folder? ")
         if crawling_option == "1":
-            filepaths = filedialog.askopenfilenames()
+            filepaths = filedialog.askopenfilenames(
+                filetypes=[(f"{ext} files", f"*{ext}") for ext in EXTENSIONS])
             break
         elif crawling_option == "2":
             folderpath = filedialog.askdirectory()
