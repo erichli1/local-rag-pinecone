@@ -132,7 +132,7 @@ def crawl_and_upsert():
 
     if len(filepaths) > 10:
         continue_input = input(
-            f"There are {len(filepaths)} files with extensions {EXTENSIONS} in this folder. Are you sure you want to continue? (y/N) ")
+            f"There are {len(filepaths)} files with extensions {EXTENSIONS} in this folder. Are you sure you want to continue? (y/N): ")
         if continue_input != "y":
             print("Aborting!")
             return
@@ -168,9 +168,23 @@ def answer_queries():
 
 if __name__ == "__main__":
     while (True):
+        print()
         choice = input(
-            "Would you like to (c)rawl and upsert documents or (a)nswer queries? ")
-        if choice == "c":
-            crawl_and_upsert()
-        elif choice == "a":
+            "Would you like to (1) answer queries, (2) add files to the db, (3) clear the current index, or (4) exit? ")
+        if choice == "1":
             answer_queries()
+        elif choice == "2":
+            crawl_and_upsert()
+        elif choice == "3":
+            confirm = input(
+                f"There are {index.describe_index_stats()['total_vector_count']} stored vectors. Are you sure you want to delete? (y/N): ")
+            if confirm == "y":
+                index.delete(delete_all=True)
+                print("Index cleared!")
+            else:
+                print("Aborting!")
+        elif choice == "4":
+            print("Goodbye!")
+            break
+        else:
+            print("Please enter either 1, 2, 3, or 4")
