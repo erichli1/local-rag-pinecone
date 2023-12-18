@@ -1,8 +1,7 @@
-from constants import LOCAL_SOURCES_FILEPATH
 from qa import answer_queries
 from setup import setup
 from update_pinecone import crawl_and_upsert
-from utils import update_existing_sources
+from utils import clear_local_sources, update_existing_sources
 
 
 if __name__ == "__main__":
@@ -27,9 +26,8 @@ if __name__ == "__main__":
                 f"There are {index.describe_index_stats()['total_vector_count']} stored vectors. Are you sure you want to delete? (y/N): ")
             if confirm == "y":
                 index.delete(delete_all=True)
-                with open(LOCAL_SOURCES_FILEPATH, 'w') as file:
-                    pass
-                update_existing_sources(existing_sources)
+                clear_local_sources()
+                existing_sources.clear()
                 print("Index cleared!")
             else:
                 print("Aborting!")

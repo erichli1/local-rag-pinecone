@@ -4,6 +4,7 @@ from langchain.chains.qa_with_sources.base import BaseQAWithSourcesChain
 
 
 def get_output_str(output: Dict[str, Any]):
+    """Returns a well-formatted string represenation of the output."""
     output_str = str(output["answer"]) + "\n"
     output_str += "Source: " + str(output["sources"]) + "\n"
     output_str += "Retrieved sources:\n"
@@ -16,6 +17,7 @@ def get_output_str(output: Dict[str, Any]):
 
 
 def answer_queries(qa: BaseQAWithSourcesChain):
+    """Answers queries from the user with RAG."""
     while (True):
         print()
         query = input("Enter query or type exit: ")

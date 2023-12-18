@@ -10,6 +10,7 @@ from constants import EMBEDDING_MODEL_NAME, INDEX_NAME, LOCAL_SOURCES_FILEPATH, 
 
 
 def setup():
+    """Initializes the local sources file, embedding model, vectorstore, and chat model."""
     if not os.path.exists(LOCAL_SOURCES_FILEPATH):
         with open(LOCAL_SOURCES_FILEPATH, 'w'):
             pass

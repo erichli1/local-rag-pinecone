@@ -15,6 +15,7 @@ from utils import update_existing_sources
 
 
 def tiktoken_len(text):
+    """Returns the number of tokens in a text."""
     tokenizer = tiktoken.get_encoding(ENCODING_NAME)
 
     tokens = tokenizer.encode(
@@ -26,6 +27,7 @@ def tiktoken_len(text):
 
 
 def parse_single_document(path: str):
+    """Parses a single PDF document and returns a list of Document objects."""
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=MAX_CHUNK_SIZE,
         chunk_overlap=20,
@@ -39,6 +41,7 @@ def parse_single_document(path: str):
 
 
 def upsert_documents(embed: OpenAIEmbeddings, index: Index, texts: list, metadatas: list):
+    """Upserts a batch of documents to the given index."""
     print(f"Upserting {len(texts)} documents.")
 
     ids = [str(uuid4()) for _ in range(len(texts))]
@@ -51,6 +54,7 @@ def get_title_from_filepath(filepath: str):
 
 
 def process_documents_for_upsert(embed: OpenAIEmbeddings, index: Index, documents: List[Document]):
+    """Processes uploaded docuemnts and calls upsert_documents() in batches."""
     texts = []
     metadatas = []
 
@@ -76,6 +80,7 @@ def process_documents_for_upsert(embed: OpenAIEmbeddings, index: Index, document
 
 
 def retrieve_files_from_folderpath(folderpath: str, extensions: list[str]):
+    """Returns list of paths of all files with valid extensions."""
     file_list = []
 
     for root, _, files in os.walk(folderpath):
@@ -87,6 +92,7 @@ def retrieve_files_from_folderpath(folderpath: str, extensions: list[str]):
 
 
 def crawl_and_upsert(embed: OpenAIEmbeddings, index: Index, previously_upserted: bool, existing_sources: list[str]):
+    """Crawls a user-selected folder and upserts all files with valid extensions."""
     filepaths = []
 
     print()
@@ -111,6 +117,7 @@ def crawl_and_upsert(embed: OpenAIEmbeddings, index: Index, previously_upserted:
 
     previously_upserted = True
 
+    # Warn the user if uploading many files to avoid accidental uploads
     if len(filepaths) > 10:
         continue_input = input(
             f"There are {len(filepaths)} files with extensions {EXTENSIONS} in this folder. Are you sure you want to continue? (y/N): ")
@@ -120,6 +127,7 @@ def crawl_and_upsert(embed: OpenAIEmbeddings, index: Index, previously_upserted:
 
     upserted_filepaths = []
 
+    # iterate through all filepaths
     for filepath in filepaths:
         # TODO: account for updated files
         if filepath in existing_sources:
