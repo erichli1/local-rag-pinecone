@@ -14,6 +14,8 @@ from tkinter import filedialog
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 
+EXTENSIONS = [".pdf"]
+
 # langchain
 EMBEDDING_MODEL_NAME = "text-embedding-ada-002"
 ENCODING_NAME = "cl100k_base"
@@ -100,9 +102,41 @@ def process_documents_for_upsert(documents: List[Document]):
         upsert_documents(texts, metadatas)
 
 
+def retrieve_files_from_folderpath(folderpath: str, extensions: list[str]):
+    file_list = []
+
+    for root, _, files in os.walk(folderpath):
+        for file in files:
+            if any(file.endswith(ext) for ext in extensions):
+                file_list.append(os.path.join(root, file))
+
+    return file_list
+
 # TODO: write better crawling logic (including updating based on timestamp and ignoring duplicates)
 def crawl_and_upsert():
-    filepaths = filedialog.askopenfilenames()
+    print()
+    filepaths = []
+
+    while (True):
+        crawling_option = input(
+            "Would you like to (1) select individual files or (2) select a folder?")
+        if crawling_option == "1":
+            filepaths = filedialog.askopenfilenames()
+            break
+        elif crawling_option == "2":
+            folderpath = filedialog.askdirectory()
+            filepaths = retrieve_files_from_folderpath(folderpath, EXTENSIONS)
+            break
+        else:
+            print("Please enter either 1 or 2")
+
+    if len(filepaths) > 10:
+        continue_input = input(
+            f"There are {len(filepaths)} files with extensions {EXTENSIONS} in this folder. Are you sure you want to continue? (y/N) ")
+        if continue_input != "y":
+            print("Aborting!")
+            return
+
     for filepath in filepaths:
         parsed_document = parse_single_document(filepath)
         process_documents_for_upsert(parsed_document)
@@ -133,5 +167,10 @@ def answer_queries():
 
 
 if __name__ == "__main__":
-    crawl_and_upsert()
-    # answer_queries()
+    while (True):
+        choice = input(
+            "Would you like to (c)rawl and upsert documents or (a)nswer queries? ")
+        if choice == "c":
+            crawl_and_upsert()
+        elif choice == "a":
+            answer_queries()
