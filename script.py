@@ -1,35 +1,8 @@
-from typing import Any, Dict
-from langchain_core.documents import Document
-from langchain.chains.qa_with_sources.base import BaseQAWithSourcesChain
-
 from constants import LOCAL_SOURCES_FILEPATH
+from qa import answer_queries
 from setup import setup
 from update_pinecone import crawl_and_upsert
 from utils import update_existing_sources
-
-
-def print_output(output: Dict[str, Any]):
-    print(str(output["answer"]))
-    print("Source: " + str(output["sources"]))
-    print("Retrieved sources:")
-    for source_document in output["source_documents"]:
-        source_document: Document = source_document
-        print(
-            f"- {str(source_document.metadata['title'])} (page {source_document.metadata['page']})")
-
-
-# TODO: separate query answering and upserting into different files
-def answer_queries(qa: BaseQAWithSourcesChain):
-    while (True):
-        print()
-        query = input("Enter query or type exit: ")
-        print("------------")
-
-        if query == "exit":
-            break
-
-        output = qa(query)
-        print_output(output)
 
 
 if __name__ == "__main__":
