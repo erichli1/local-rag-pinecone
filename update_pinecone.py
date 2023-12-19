@@ -5,15 +5,14 @@ from typing import List
 from pinecone import Index
 from langchain_core.documents import Document
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.document_loaders import PyPDFLoader
-from langchain.document_loaders import Docx2txtLoader
+from langchain.document_loaders import Docx2txtLoader, PyPDFLoader, UnstructuredPowerPointLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from uuid import uuid4
 from tkinter import filedialog
 
 from utils import update_existing_sources, LOCAL_SOURCES_FILEPATH
 
-EXTENSIONS = [".pdf", ".docx"]
+EXTENSIONS = [".pdf", ".docx", ".pptx"]
 ENCODING_NAME = "cl100k_base"
 MAX_CHUNK_SIZE = 400
 UPSERT_BATCH_LIMIT = 100
@@ -44,6 +43,8 @@ def parse_single_document(path: str):
 
     if path.endswith(".docx"):
         loader = Docx2txtLoader(path)
+    elif path.endswith(".pptx"):
+        loader = UnstructuredPowerPointLoader(path)
     elif path.endswith(".pdf"):
         loader = PyPDFLoader(path)
 

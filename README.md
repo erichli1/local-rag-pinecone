@@ -6,4 +6,6 @@ To prevent duplicate uploads, previously-uploaded filepaths are stored locally i
 
 Add `PINECONE_API_KEY`, `INDEX_NAME`, `PINECONE_ENVIRONMENT`, and `OPENAI_API_KEY` to environment.
 
+Install requirements with `pip install -r requirements.txt`. Note that you will have to install the punkt tokenizer and averaged_perceptron_tagger POS tagger from NTLK separately with `import ntlk; ntlk.download('punkt'); ntlk.download('averaged_perceptron_tagger')`.
+
 Run `python3 script.py`
