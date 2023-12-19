@@ -1,5 +1,4 @@
 pinecone-env/
-test-data/
 .DS_Store
 sources.txt
 __pycache__/

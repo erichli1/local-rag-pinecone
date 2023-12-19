@@ -1,5 +1,5 @@
 from qa import answer_queries
-from setup import setup
+from initialize import setup
 from update_pinecone import crawl_and_upsert
 from utils import clear_local_sources, update_existing_sources
 
