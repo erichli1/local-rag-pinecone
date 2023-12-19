@@ -1,4 +1,4 @@
-from constants import LOCAL_SOURCES_FILEPATH
+LOCAL_SOURCES_FILEPATH = "./sources.txt"
 
 
 def update_existing_sources(existing_sources):

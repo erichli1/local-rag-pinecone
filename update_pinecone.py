@@ -11,10 +11,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from uuid import uuid4
 from tkinter import filedialog
 
-from constants import ENCODING_NAME, LOCAL_SOURCES_FILEPATH, MAX_CHUNK_SIZE, UPSERT_BATCH_LIMIT
-from utils import update_existing_sources
+from utils import update_existing_sources, LOCAL_SOURCES_FILEPATH
 
 EXTENSIONS = [".pdf", ".docx"]
+ENCODING_NAME = "cl100k_base"
+MAX_CHUNK_SIZE = 400
+UPSERT_BATCH_LIMIT = 100
 
 
 def tiktoken_len(text):
@@ -137,7 +139,7 @@ def crawl_and_upsert(embed: OpenAIEmbeddings, index: Index, previously_upserted:
 
     # iterate through all filepaths
     for filepath in filepaths:
-        # TODO: account for updated files
+        # TODO: store date uploaded and compare to metadata to see if updated since last upload
         if filepath in existing_sources:
             print(
                 f"Skipping {get_title_from_filepath(filepath)} because it was already parsed.")

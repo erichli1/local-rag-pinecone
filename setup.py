@@ -6,7 +6,13 @@ from langchain.vectorstores import Pinecone
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 
-from constants import EMBEDDING_MODEL_NAME, INDEX_NAME, LOCAL_SOURCES_FILEPATH, OPENAI_API_KEY, TEXT_FIELD
+from utils import LOCAL_SOURCES_FILEPATH
+
+
+EMBEDDING_MODEL_NAME = "text-embedding-ada-002"
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+INDEX_NAME = os.environ["INDEX_NAME"]
+TEXT_FIELD = "text"
 
 
 def setup():
