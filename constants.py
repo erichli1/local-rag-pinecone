@@ -1,7 +1,6 @@
 import os
 
 # TODO: support more file types
-EXTENSIONS = [".pdf"]
 LOCAL_SOURCES_FILEPATH = "./sources.txt"
 
 # langchain

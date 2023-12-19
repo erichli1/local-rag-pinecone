@@ -6,12 +6,15 @@ from pinecone import Index
 from langchain_core.documents import Document
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from uuid import uuid4
 from tkinter import filedialog
 
-from constants import ENCODING_NAME, EXTENSIONS, LOCAL_SOURCES_FILEPATH, MAX_CHUNK_SIZE, UPSERT_BATCH_LIMIT
+from constants import ENCODING_NAME, LOCAL_SOURCES_FILEPATH, MAX_CHUNK_SIZE, UPSERT_BATCH_LIMIT
 from utils import update_existing_sources
+
+EXTENSIONS = [".pdf", ".docx"]
 
 
 def tiktoken_len(text):
@@ -27,7 +30,7 @@ def tiktoken_len(text):
 
 
 def parse_single_document(path: str):
-    """Parses a single PDF document and returns a list of Document objects."""
+    """Parses a single document and returns a list of Document objects."""
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=MAX_CHUNK_SIZE,
         chunk_overlap=20,
@@ -35,7 +38,12 @@ def parse_single_document(path: str):
         separators=["\n\n", "\n", " ", ""]
     )
 
-    loader = PyPDFLoader(path)
+    loader = None
+
+    if path.endswith(".docx"):
+        loader = Docx2txtLoader(path)
+    elif path.endswith(".pdf"):
+        loader = PyPDFLoader(path)
 
     return loader.load_and_split(text_splitter)
 
@@ -60,7 +68,7 @@ def process_documents_for_upsert(embed: OpenAIEmbeddings, index: Index, document
 
     for _, record in enumerate(tqdm(documents)):
         metadata = {
-            'page': str(record.metadata['page']),
+            'page': str(record.metadata['page']) if "page" in record.metadata else "N/A",
             'source': record.metadata['source'],
             'title': get_title_from_filepath(record.metadata['source']),
             'text': record.page_content,
